@@ -1,11 +1,6 @@
 V_7805=5.48;
 Vref_arduino=5;
 
-% Frequency 
-w = 0.1;
-%w = 0.2; 
-%w = 0.4; 
-
 if ~exist('a','var') 
     a = arduino;
 end
@@ -45,6 +40,11 @@ vtacho = 2 * (2 * velocity * Vref_arduino / 5 - V_7805);
 
 k1=2;
 k2=0.9;
+
+% Frequency 
+w = 0.1;
+%w = 0.2; 
+%w = 0.4; 
 
 % desired = 5 + 2*sin(2*pi*w*t);
 desired = 5;
