@@ -1,0 +1,396 @@
+\documentclass[12pt]{article}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{fontspec}
+% \usepackage[left=1.06cm,top=0.9cm,right=1.06cm,bottom=0.49cm]{geometry}
+% \setmainfont{GFS Didot}
+\setmainfont{EB Garamond}
+
+
+% Set page size and margins
+\usepackage[a4paper,top=2cm,bottom=1.5cm,left=1cm,right=1cm]{geometry}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\setlength{\parindent}{0pt}
+
+% Useful packages
+\usepackage{graphicx}
+\graphicspath{{./media/}}
+\usepackage{subfig}
+\usepackage{float}
+\usepackage{siunitx}
+\usepackage{minted}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+% \usepackage{sectsty}
+% \sectionfont{\fontsize{12}{15}\selectfont}
+
+\title{\vspace{-2cm} Εργαστηριακή Αναφορά\\ 
+         \large 031 - Συστήματα Αυτομάτου Ελέγχου ΙΙ}
+
+\author{Ιωάννης Δημουλιός 10641}
+\date{Εαρινό εξάμηνο 2024}
+
+\lhead{031 - Συστήματα Αυτομάτου Ελέγχου ΙΙ}
+\chead{Εργαστηριακή Αναφορά}
+\rhead{Ιωάννης Δημουλιός}
+
+\begin{document}
+\maketitle
+
+\section*{Προεργασία}
+Το μοντέλο του συστήματος δίνεται από το μπλοκ διάγραμμα. 
+\begin{center}
+        \includegraphics*[scale=0.3]{system_model.png}
+\end{center}
+Έχουν γίνει οι απαραίτητες αλλαγές στα πρόσημα καθ' υπόδειξη του διδάσκοντος. 
+
+Ορίζουμε μεταβλητές κατάστασης του συστήματος
+\begin{align*}
+        x_1 &= \theta \\
+        x_2 &= v_{\textrm{tacho}}.
+\end{align*}
+Από το σχήμα παίρνουμε
+\begin{align}
+        \Omega = \frac{v_\textrm{tacho}}{k_T} = \frac{x_2}{k_T} \\
+        \Theta = \Omega k_\mu \frac{k_0}{s} \overset{(1)}{\implies}&\dot{x_1} = \frac{k_\mu k_0}{k_T}x_2  \\
+        \Omega = \frac{k_m}{T_ms + 1}U \overset{(1)}{\implies}& \dot{x_2} = -\frac{1}{T_m}x_2 + \frac{k_Tk_m }{T_m }u.
+\end{align}
+Γράφουμε τις εξισώσεις \((2)\) και \((3)\) σε μορφή πινάκων, οπότε 
+\[
+\dot{x} = \underbrace{\begin{bmatrix}
+        0 & \dfrac{k_\mu k_0}{k_T } \\
+        0 & -\dfrac{1}{T_m} 
+\end{bmatrix}}_{A} x + \underbrace{\begin{bmatrix}
+        0\vphantom{\dfrac{0}{1}} \\
+        \dfrac{k_T k_m }{T_m }   
+\end{bmatrix}}_{B} u.
+\] 
+Το χαρακτηριστικό πολυώνυμο του συστήματος είναι
+\begin{equation*}
+    p(s) = \det(sI - A) = s^2 + \dfrac{1}{T_m } s. 
+\end{equation*}
+Το ζεύγος πινάκων \((A,B)\) είναι ελέγξιμο, αφού 
+\[
+    M = \begin{bmatrix}
+        B & AB
+    \end{bmatrix} = \begin{bmatrix}
+        0\vphantom{\dfrac{0}{1}} & \dfrac{k_\mu k_0 k_m }{T_m }\\
+        \dfrac{k_T k_m }{T_m } & -\dfrac{k_T k_m }{T_m^2}   
+    \end{bmatrix}, \quad \det(M) \neq 0.
+\]
+Επίσης, αφού έχουμε ως έξοδο μόνο τη θέση, τότε
+\[
+    y = \underbrace{\begin{bmatrix}
+        1 & 0
+    \end{bmatrix}}_{C} x. 
+\] 
+Δείχνουμε ότι το σύστημα είναι και παρατηρήσιμο. Πράγματι, 
+\[
+    W = \begin{bmatrix}
+        C \\
+        CA\vphantom{\dfrac{0}{1_1}}
+    \end{bmatrix} = \begin{bmatrix}
+        1 & 0 \\
+        0 & \dfrac{k_\mu k_0}{k_T}
+    \end{bmatrix}, \quad \det(W) \neq 0.
+\]
+
+\section*{1ο Εργαστήριο} 
+Ακολουθώντας τις οδηγίες του φυλλαδίου, λαμβάνουμε, όταν \(U = \SI{10}{V}\), \(V_\textrm{tacho} = \SI{8.6}{V }\), άρα 
+\begin{equation*}
+    k_m k_T = \dfrac{8.6}{10} = 0.86.
+\end{equation*} 
+Υπολογίζουμε \(8.6 \cdot 63.3\% = \SI{5.44}{V}\) και ο χρόνος που απαιτείται για να φτάσει σε αυτήν την τιμή είναι 
+\begin{equation*}
+    T_m = \SI{0.555}{\second}.
+\end{equation*} 
+Μια πλήρης περιστροφή του άξονα του κινητήρα αντιστοιχεί σε \(10^{\circ}\) του άξονα εξόδου, άρα 
+\begin{equation*}
+    k_\mu = \dfrac{10^\circ }{360^\circ} = \dfrac{1}{36}.
+\end{equation*} 
+Μετά μετράμε \(\Delta x_2 = \SI{12.6}{V }\) σε \(\Delta t = \SI{0.873}{s }\) για \(1\) περιστροφή, άρα
+\begin{equation*}
+    \omega_{\text{out}} = \dfrac{\SI{60}{s } \cdot 1 \text{round}}{\Delta t } = \SI{68.73}{rpm }.
+\end{equation*} 
+Tότε,  
+\begin{gather*}
+    \dfrac{\Delta x_2}{\Delta t} = k_0 \omega_{\text{out}} \implies k_0 = 0.21 \\
+    \omega_\text{in} = \dfrac{1}{k_\mu} \omega_\text{out} = \SI{2474.28}{rpm} \\
+    V_\text{tacho} = k_T \omega_\text{in} \implies k_T = \dfrac{8.6}{2474.28} = 0.00348 \\ 
+    k_m k_T = 0.86 \implies k_m = \dfrac{0.86}{0.00348} = 247.13.
+\end{gather*} 
+Συγκεντρωτικά, οι ζητούμενες σταθερές έχουν τις ακόλουθες τιμές
+\begin{align*}
+        k_m &= 247.13 \\
+        T_m &= 0.55 \\
+        k_T &= 0.00348 \\
+        k_0 &= 0.21 \\
+        k_{\mu} &= \frac{1}{36}.
+\end{align*} 
+
+\section*{2o Εργαστήριο}
+Καλούμαστε να σχεδιάσουμε έναν ελεγκτή γραμμικής ανάδρασης καταστάσεων. Επομένως, θέτουμε
+\[
+    u = -k_1 x_1 - k_2 x_2 + k_r r
+\] και ψάχνουμε τα κέρδη \(k_1\), \(k_2\), \(k_r\). Όμως πρέπει, μετά από πράξεις,
+\begin{equation*}
+    k_r = -\dfrac{1}{C(A-Bk)^{-1} Bk} = k_1.
+\end{equation*}
+Τότε,
+\begin{align*}
+    \dot{x} = Ax + Bu &= (A - Bk)x + Bk_1 r \\
+            &= \underbrace{\begin{bmatrix}
+                0 & \dfrac{k_\mu k_0}{k_T } \\
+                -\dfrac{k_1 k_T k_m }{T_m } & -\dfrac{1 + k_2 k_T k_m }{T_m }
+            \end{bmatrix}}_{A'} x + \begin{bmatrix}
+                0\vphantom{\dfrac{0}{k_1}} \\
+                \dfrac{k_T k_m k_1 }{T_m }
+            \end{bmatrix} r .
+\end{align*} 
+Τώρα το χαρακτηριστικό πολυώνυμο του $A'$ γράφεται 
+\begin{align*}
+    \det(sI - A') &= \det\left(\begin{bmatrix}
+        s & -\dfrac{k_\mu k_0}{k_T } \\
+        \dfrac{k_1 k_T k_m }{T_m } & \dfrac{1 + k_2 k_T k_m }{T_m } s 
+    \end{bmatrix}\right) \\
+    &= s^2 + \dfrac{1 + k_2 k_T k_m }{T_m }s + \dfrac{k_\mu k_1 k_0 k_m}{T_m}.
+\end{align*}
+Το σύστημα για θετικά \(k_1\), \(k_2\) από το κριτήριο Routh-Hurwitz είναι ευσταθές. 
+
+\subsection*{Ερωτήματα}
+Για αυτό το εργαστήριο χρησιμοποιούμε 
+\begin{equation*}
+    k_1 = 2, \quad k_2 = 0.9.
+\end{equation*} 
+\textbf{2.1} 
+\begin{figure}[H]
+    \centering
+    \includegraphics*[scale=0.25]{lab2a_all.jpg}
+\end{figure} 
+\textbf{2.2} \\
+Υπάρχει ένα μικρό σφάλμα της τάξεως του \(1\%\), το οποίο οφείλεται στις τριβές του συστήματος. \\
+Για να μειωθεί το σφάλμα στη μόνιμη κατάσταση μπορούμε να προσθέσουμε έναν ολοκληρωτικό όρο στον ελεγκτή μας, ακριβώς δηλαδή αυτό που ορίζει η δυναμική ανάδραση καταστάσεων στο επόμενο εργαστήριο. 
+\bigskip
+
+\textbf{2.3} 
+\begin{figure}[H]
+    \centering
+    \includegraphics*[scale=0.25]{lab2c_all.jpg}
+\end{figure}
+Τα αποτελέσματα είναι πανομοιότυπα με την αρχική περίπτωση, με μια ελαφρώς μεγαλύτερη απόκλιση, της τάξεως του \(1.5\%\) από την επιθυμητή τελική τιμή. Αυτό οφείλεται στην εξωτερική παρεμβολή που εισάγει το μαγνητικό φρένο στην είσοδο του συστήματος, η οποία δεν αποσβέννυται με τη χρήση γραμμικής ανάδραση καταστάσεων.
+\bigskip
+
+\textbf{2.4} 
+\begin{figure}[H]
+    \centering
+    \caption*{\(\omega = 2\pi\cdot 0.1\) (μισή περίοδος σε \(\SI{5}{s}\))}
+    \includegraphics*[scale=0.25]{lab2d_halfPer_all.jpg}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \caption*{\(\omega = 2\pi\cdot 0.2\) (μία περίοδος σε \(\SI{5}{s}\))}
+    \includegraphics*[scale=0.25]{lab2d_onePer_all.jpg}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \caption*{\(\omega = 2\pi\cdot 0.4\) (δύο περίοδοι σε \(\SI{5}{s}\))}
+    \includegraphics*[scale=0.25]{lab2d_twoPer_all.jpg}
+\end{figure}
+Καταρχάς, παρατηρούμε ότι σε όλες τις περιπτώσεις η θέση του συστήματος εκτελεί και αυτή ταλάντωση στην εισηγμένη συχνότητα, αλλά το πλάτος της μειώνεται όσο μεγαλώνει η συχνότητα της ταλάντωσης της επιθυμητής θέσης. \\
+Επιπλέον, παρατηρούμε ότι σε κάθε περίπτωση η θέση του συστήματος, αν και προσπαθεί να ακολουθήσει την επιθυμητή τιμή, υστέρει με μια διαφορά φάσης σχεδόν σταθερή περίπου στις \(70^\circ\). Αυτή εισάγεται αμέσως μόλις ξεκινάει η ταλάντωση της επιθυμητής θέσης, οπότε και η θέση του συστήματος παραμένει σχεδόν σταθερή στην αρχική της τιμή για τον χρόνο που αντιστοιχεί στην προαναφερθείσα διαφορά φάσης σε κάθε περίπτωση. 
+\section*{3ο Εργαστήριο}
+Καλούμαστε να σχεδιάσουμε έναν ελεγκτή δυναμικής ανάδρασης καταστάσεων. Επομένως, εισάγουμε μια επιπλέον μεταβλητή κατάστασης, την \(z\), για την οποία
+\begin{equation*}
+    \dot{z} = y - r = x_1 - r.
+\end{equation*} 
+Ο νέος ελεγκτής θα είναι 
+\begin{equation*}
+    u = -k_1 x_1 - k_2 x_2 - k_i z
+\end{equation*} και το νέο σύστημα με αυτόν τον ελεγκτή
+\begin{align*}
+    \begin{bmatrix}
+        \dot{x_1}\vphantom{\dfrac{1}{0_0}} \\ 
+        \dot{x_2}\vphantom{\dfrac{1}{0_0}}\\
+        \dot{z}    
+    \end{bmatrix}
+     &= \begin{bmatrix}
+        0 & \dfrac{k_\mu k_0}{k_T } & 0 \\
+        0 & -\dfrac{1}{T_m} & 0 \\
+        1 & 0 & 0
+\end{bmatrix}
+    \begin{bmatrix}
+        x_1  \vphantom{\dfrac{1}{0_0}}\\
+        x_2 \vphantom{\dfrac{1}{0_0}}\\
+        z
+    \end{bmatrix}
++ \begin{bmatrix}
+        0\vphantom{\dfrac{0}{1}} \\
+        \dfrac{k_T k_m }{T_m }  \\
+        0 
+\end{bmatrix} 
+    \begin{bmatrix}
+        -k_1 & -k_2 & -k_i
+    \end{bmatrix}
+    \begin{bmatrix}
+        x_1  \vphantom{\dfrac{1}{0_0}}\\
+        x_2 \vphantom{\dfrac{1}{0_0}}\\
+        z
+    \end{bmatrix}
+    + 
+    \begin{bmatrix}
+        0  \vphantom{\dfrac{1}{0_0}}\\
+        0 \vphantom{\dfrac{1}{0_0}}\\
+        -1
+    \end{bmatrix} r \\
+    &= \begin{bmatrix}
+        0 & \dfrac{k_\mu k_0}{k_T } & 0 \\
+        -\dfrac{k_ 1 k_T k_m }{T_m } & -\dfrac{1 + k_2 k_T k_m }{T_m} & -\dfrac{k_i k_T k_m }{T_m } \\
+        1 & 0 & 0
+\end{bmatrix}
+    \begin{bmatrix}
+        x_1  \vphantom{\dfrac{1}{0_0}}\\
+        x_2 \vphantom{\dfrac{1}{0_0}}\\
+        z
+    \end{bmatrix}
+    + 
+    \begin{bmatrix}
+        0  \vphantom{\dfrac{1}{0_0}}\\
+        0 \vphantom{\dfrac{1}{0_0}}\\
+        -1
+    \end{bmatrix} r.
+\end{align*} 
+Τώρα το χαρακτηριστικό πολυώνυμο του συστήματος κλειστού βρόχου γράφεται
+\begin{align*}
+    \det(sI - A'') &= \det\left(  \begin{bmatrix}
+        s & \dfrac{k_\mu k_0}{k_T } & 0 \\
+        \dfrac{k_ 1 k_T k_m }{T_m } & s + \dfrac{1 + k_2 k_T k_m}{T_m} & \dfrac{k_i k_T k_m }{T_m } \\
+        -1 & 0 & s
+\end{bmatrix}\right) \\
+    &= s^3 + \dfrac{1 + k_2 k_T k_m}{T_m} s^2 + \dfrac{k_1 k_\mu k_0 k_m }{T_m } s + \dfrac{k_i k_\mu k_0 k_m }{T_m }.
+\end{align*} 
+Θεωρώντας θετικά κέρδη \(k_1\), \(k_2\), \(k_i \), από το κριτήριο Routh-Hurwitz, για να είναι ευσταθές το σύστημα πρέπει 
+\begin{equation*}
+    \dfrac{1 + k_2 k_T k_m}{T_m} \cdot \dfrac{k_1 k_\mu k_0 k_m }{T_m } > \dfrac{k_i k_\mu k_0 k_m }{T_m } \implies 
+    \dfrac{(1 + k_2 k_T k_m) k_1 }{T_m} > k_i.
+\end{equation*} 
+
+\subsection*{Ερωτήματα}
+Σε αυτό το εργαστήριο χρησιμοποιούμε
+\begin{equation*}
+    k_1 = 3, \quad k_2 = 1, \quad k_i = 3.
+\end{equation*}
+Εύκολα διαπιστώνουμε ότι ικανοποιείται η συνθήκη ευστάθειας, όπως ορίστηκε παραπάνω. 
+
+Εξαιτίας προβληματών του Arduino στη μετατροπή τιμών θέσης σε τάση για θέσεις του συστήματος που αντιστοιχούσαν σε τιμές μικρότερες του \SI{1.5}{V}, χρησιμοποιούμε αρχική τιμή \(\theta_0 = \SI{4}{V }\), \(\theta_\text{ref} = \SI{10}{V }\) και \(T_\text{max} = \SI{8}{s }\). 
+\begin{figure}[H]
+    \centering
+    %\caption*{somthing}
+    \includegraphics*[scale=0.25]{lab3_all_lay22.jpg}
+    %\includegraphics*[scale=0.25]{lab3_all_lay32.jpg}
+\end{figure}
+Τώρα τα σφάλματα που είχαμε στο δεύτερο εργαστήριο σχεδόν εξαλείφονται. Τελευταία τιμή που μετρήθηκε για τη θέση είναι η \texttt{positionData(end) = 9.9267} που αντιστοιχεί σε σφάλμα \(0.7\%\), υποδιπλάσιο των προηγούμενων. 
+
+Ωστόσο αυτή η ενίσχυση της ακρίβειας αυξάνει αρκετά τον χρόνο αποκατάστασης. Εδώ τα \(\SI{8 }{s }\) μόλις είναι αρκετά για να φτάσει η θέση στη μόνιμη κατάσταση. Αντίθετα, στο προηγούμενο εργαστήριο (αν και για διαφορετική  αρχική θέση και θέση αναφοράς) το σύστημα έφτανε στη μόνιμη κατάσταση σε λιγότερο από \SI{2}{s}. 
+
+Ακόμα, επειδή ο ελεγκτής \(u\) λαμβάνει αρχικά αρνητικές τιμές δεδομένων των επιλεγμένων κερδών και της αρχικής κατάστασης του συστήματος, από τις εξισώσεις κατάστασης προκύπτει ότι η παράγωγος της ταχύτητας είναι αρχικά αρνητική με αποτέλεσμα και η ταχύτητα να γίνεται αρνητική και άρα η θέση για ένα σύντομο χρονικό διάστημα περίπου \(\SI{0.5}{s }\) να μειώνεται, δηλαδή το σφάλμα θέσης να αυξάνεται.
+
+\section*{4ο Εργαστήριο}
+Καλούμαστε να σχεδιάσουμε έναν παρατηρητή του συστήματος και κατ' επέκταση έναν ελεγκτή γραμμικής ανάδρασης εξόδου.
+
+Έστω  
+\begin{equation*}
+    p_d(s) = s^2 + p_1 s + p_2 
+\end{equation*}
+το επιθυμητό χαρακτηριστικό πολυώνυμο του παρατηρητή.
+
+Στην πρώτη ενότητα υπολογίσαμε τον πίνακα \(W\) και το χαρακτηριστικό πολυώνυμο του συστήματος \(p(s)\), οπότε
+\begin{gather*}
+    W^{-1} =  \begin{bmatrix}
+        1 & 0 \\
+        0 & \dfrac{k_\mu k_0}{k_T}
+    \end{bmatrix}^{-1} = 
+    \begin{bmatrix}
+        1 & 0 \\
+        0 & -\dfrac{k_T}{k_\mu k_0} 
+    \end{bmatrix}, \\
+    \tilde{W} = \begin{bmatrix}
+        1 & 0 \\
+        \dfrac{1}{T_m } & 1
+    \end{bmatrix}^{-1} = \begin{bmatrix}
+        1 & 0 \\
+        -\dfrac{1}{T_m } & 1
+    \end{bmatrix}. 
+\end{gather*}
+Τότε, 
+\begin{align*}
+    L &= W^{-1} \tilde{W} \begin{bmatrix}
+        p_1 - \dfrac{1}{T_m } \\ 
+        p_2 
+    \end{bmatrix} \\
+    &= \begin{bmatrix}
+        p_1 - \dfrac{1}{T_m } \\ 
+        \dfrac{k_T }{k_\mu k_0 T_m }\left( p_1 - \dfrac{1}{T_m }\right) - \dfrac{k_T }{k_\mu k_0} p_2\\ 
+    \end{bmatrix}
+\end{align*}
+
+Τώρα ο παρατηρητής γράφεται
+\begin{align*}
+    \dot{\hat{x}} = A\hat{x} + Bu + L(y - Cx), 
+\end{align*}
+όπου \(u = -k\hat{x} + k_r r\). 
+
+\subsection*{Ερωτήματα}
+Θέτουμε 
+\begin{equation*}
+    p_1 = 15, \quad p_2 = 25, 
+\end{equation*}
+οπότε προκύπτει 
+\begin{equation*}
+    L = \begin{bmatrix}
+        13.18 \\
+        0.62
+    \end{bmatrix}.
+\end{equation*}
+Για κέρδη του ελεγκτή χρησιμοποιούμε αυτά από τη γραμμική ανάδραση καταστάσεων, δηλαδή
+\begin{equation*}
+    k_1 = k_r = 2, \quad k_2 = 0.9.
+\end{equation*}
+
+\textbf{4.1} 
+\begin{figure}[H]
+    \centering
+    \caption*{Βηματική είσοδος \(u = 7\)}
+    \includegraphics*[scale=0.25]{lab4a_u7_all.jpg}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \caption*{Βηματική είσοδος \(u = 3\)}
+    \includegraphics*[scale=0.25]{lab4a_u3_all.jpg}
+\end{figure}
+Η δειγματοληψία της εξόδου, δηλαδή της θέσης, γινόταν πολύ αργά (μόλις \(40\) δείγματα σε \SI{5}{s}) με αποτέλεσμα να χάνεται η ακρίβεια ιδιαίτερα σε απότομες αλλαγές, όπως φαίνεται χαρακτηριστικά στην περίπτωση \(u = 7\). 
+
+Και στις δύο περιπτώσεις ο παρατηρητής ακολουθεί ικανοποιητικά την πραγματική θέση. 
+
+Αντίθετα, στην περίπτωση \(u = 7\) ο παρατηρητής δεν καταφέρνει να συγκλίνει στην πραγματική ταχύτητα, γεγονός που οφείλεται κυρίως στην απουσία ικανοποιητικής δειγματοληψίας. Πράγματι, μεταξύ απότομων μεταβολών της θέσης δεν υπάρχουν ενδιάμεσες μετρήσεις με αποτέλεσμα η παρατήρηση της ταχύτητας να μην προλαβαίνει να αυξηθεί ή να μειωθεί επαρκώς, ώστε να αντικατοπτρίσει αυτήν την μεταβολή. 
+
+Στην περίπτωση \(u = 3\) ο παρατηρητής φτάνει στην μόνιμη κατάσταση της ταχύτητας του συστήματος, αλλά σε απότομες μεταβολές της θέσης μειώνεται ακαριαία η παρατήρηση της ταχύτητας εξαιτίας, όπως προκύπτει από τις εξισώσεις κατάστασης του παρατηρητή, έως ότου να επαναφερθεί στην πρότερη τιμή της.
+
+\textbf{4.2}
+\begin{figure}[H]
+    \centering
+    %\caption*{}
+    \includegraphics*[scale=0.25]{lab4b_all.jpg}
+\end{figure}
+Και πάλι η παρακολούθηση της θέσης είναι ικανοποιητική, ενώ της ταχύτητας παρουσιάζει σφάλμα ως προς την πραγματική τιμή. 
+
+Για επαρκώς μεγάλα \(p_1 \) και \(p_2\) (π.χ. \(60\) και \(100\) αντίστοιχα), δηλαδή για μεγαλύτερους κατά απόλυτη τιμή πόλους, ο παρατηρητής καταρρέει λόγω υπερυψώσεων. 
+
+Για μικρότερα \(p_1\) και \(p_2\) (π.χ. τέτοια ώστε \(L = [4 0.1]^T\)), δηλαδή για μικρότερους κατά απόλυτη τιμή πόλους η παρακολούθηση του συστήματος είναι πιο αργή και λιγότερο αξιόπιστη, ιδιαίτερα κατά τη διάρκεια του μεταβατικού φαινομένου. 
+\begin{figure}[H]
+    \centering
+    %\caption*{}
+    \includegraphics*[scale=0.25]{lab4b_lowgains_all.jpg}
+\end{figure}
+\end{document}
+
+
