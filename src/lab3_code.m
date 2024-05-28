@@ -79,8 +79,8 @@ pause();
 %%
 figure
 plot(timeData,positionData);
-%hold on
-%plot(timeData,desiredData); 
+hold on
+plot(timeData,desiredData); 
 title('position')
 
 figure
