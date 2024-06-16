@@ -50,8 +50,14 @@ w = 0.1;
 desired = 5;
 u = - k1*theta - k2*vtacho + k1*desired;
 
-writePWMVoltage(a, 'D6', 0);
-writePWMVoltage(a, 'D9', min(abs(u) / 2, 5));
+if u > 0
+    writePWMVoltage(a, 'D6', 0);
+    writePWMVoltage(a, 'D9', min(abs(u) / 2, 5));
+else    
+    writePWMVoltage(a, 'D9', 0);
+    writePWMVoltage(a, 'D6', min(abs(u) / 2, 5));
+end
+
 
 t=toc;
     
