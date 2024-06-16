@@ -89,10 +89,14 @@ Error = [theta; vtacho] - Xobs;
 Xobs_dot = A*Xobs + B*u + L*C*Error;
 Xobs = Xobs + dt*Xobs_dot; 
 
+if u > 0
+    writePWMVoltage(a, 'D6', 0);
+    writePWMVoltage(a, 'D9', min(abs(u) / 2, 5));
+else    
+    writePWMVoltage(a, 'D9', 0);
+    writePWMVoltage(a, 'D6', min(abs(u) / 2, 5));
+end
 
-
-writePWMVoltage(a, 'D6', 0);
-writePWMVoltage(a, 'D9', min(abs(u) / 2, 5));
 
 t=toc;
 
