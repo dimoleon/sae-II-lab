@@ -54,8 +54,14 @@ desired = 10;
 z = last_z + (theta - desired)*dt; 
 u = -k1*theta - k2*vtacho - ki*z;
 
-writePWMVoltage(a, 'D6', 0);
-writePWMVoltage(a, 'D9', min(abs(u) / 2, 5));
+if u > 0
+    writePWMVoltage(a, 'D6', 0);
+    writePWMVoltage(a, 'D9', min(abs(u) / 2, 5));
+else    
+    writePWMVoltage(a, 'D9', 0);
+    writePWMVoltage(a, 'D6', min(abs(u) / 2, 5));
+end
+
 
 t=toc;
 
